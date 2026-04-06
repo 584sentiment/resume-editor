@@ -15,7 +15,6 @@ export const geometryShapes: ShapeItem[] = [
       width: 120,
       height: 80,
       fill: '#2563EB',
-      cornerRadius: 8,
     }),
   },
   {

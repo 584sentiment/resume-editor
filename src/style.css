@@ -688,58 +688,118 @@
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 12px;
+  padding: 8px;
   box-shadow: var(--shadow-lg);
-  width: 56px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-}
-
-.toolbar-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.toolbar-label {
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-align: center;
-  padding: 2px 0;
-}
-
-.toolbar-shapes {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.toolbar-shape-btn {
-  width: 32px;
-  height: 32px;
+.toolbar-category {
+  position: relative;
+}
+
+/* 伪元素桥梁：填补按钮与 flyout 之间的空隙，确保鼠标平滑移入 flyout */
+.toolbar-category::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -4px;
+  width: 4px;
+  height: 100%;
+}
+
+.toolbar-category-btn {
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
+  border: none;
 }
 
-.toolbar-shape-btn:hover {
+.toolbar-category-btn:hover {
   background: var(--primary-light);
   color: var(--primary);
 }
 
-.toolbar-shape-btn:active {
-  transform: scale(0.92);
+.toolbar-category-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.toolbar-category-btn.active:hover {
+  background: var(--primary-hover);
+}
+
+.toolbar-flyout {
+  position: absolute;
+  left: calc(100% + 4px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  min-width: 140px;
+  z-index: 100;
+  animation: flyoutIn 0.15s ease;
+}
+
+.flyout-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px 6px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 4px;
+}
+
+.flyout-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  font-family: var(--font-body);
+  white-space: nowrap;
+}
+
+.flyout-item:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.flyout-item.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+@keyframes flyoutIn {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .toolbar-divider {
@@ -1106,12 +1166,11 @@
 
   .editor-toolbar {
     left: 8px;
-    width: 48px;
-    padding: 8px;
+    padding: 6px;
   }
 
-  .toolbar-shape-btn {
-    width: 28px;
-    height: 28px;
+  .toolbar-category-btn {
+    width: 34px;
+    height: 34px;
   }
 }

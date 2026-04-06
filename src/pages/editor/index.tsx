@@ -21,10 +21,12 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const [selectedElement, setSelectedElement] = useState<AnyElement | null>(null);
   const [bubblePos, setBubblePos] = useState({ x: 0, y: 0 });
   const [panelPos, setPanelPos] = useState({ x: 0, y: 0 });
+  const [activeTool, setActiveTool] = useState<string | null>(null);
 
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const managerRef = useRef<CanvasManager | null>(null);
+  const activeToolRef = useRef<string | null>(null);
 
   // 同步外部传入的 templateIndex
   useEffect(() => {
@@ -105,6 +107,40 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 选择工具
+  const handleSelectTool = useCallback((shapeId: string | null) => {
+    managerRef.current?.exitDrawMode();
+    if (shapeId) {
+      setActiveTool(shapeId);
+      activeToolRef.current = shapeId;
+      managerRef.current?.enterDrawMode(shapeId, () => {
+        setActiveTool(null);
+        activeToolRef.current = null;
+      });
+    } else {
+      setActiveTool(null);
+      activeToolRef.current = null;
+    }
+  }, []);
+
+  // 取消绘制
+  const cancelDrawing = useCallback(() => {
+    managerRef.current?.exitDrawMode();
+    setActiveTool(null);
+    activeToolRef.current = null;
+  }, []);
+
+  // Escape 取消绘制
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && activeToolRef.current) {
+        cancelDrawing();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [cancelDrawing]);
+
   const handleBack = useCallback(() => {
     managerRef.current?.destroy();
     managerRef.current = null;
@@ -122,10 +158,6 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const handleResetView = useCallback(() => {
     managerRef.current?.resetView();
     setZoom(1);
-  }, []);
-
-  const handleAddShape = useCallback((shapeId: string) => {
-    managerRef.current?.addShape(shapeId);
   }, []);
 
   const handleExport = useCallback(() => {
@@ -173,6 +205,11 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     setSelectedElement(null);
   }, []);
 
+  const handleGroup = useCallback(() => managerRef.current?.groupSelected(), []);
+  const handleUngroup = useCallback(() => managerRef.current?.ungroupSelected(), []);
+  const handleBringToFront = useCallback(() => managerRef.current?.bringToFront(), []);
+  const handleSendToBack = useCallback(() => managerRef.current?.sendToBack(), []);
+
   return (
     <>
       <Topbar
@@ -187,7 +224,7 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
         onExport={handleExport}
       />
       <div className="editor-layout">
-        <Toolbar onAddShape={handleAddShape} />
+        <Toolbar activeTool={activeTool} onSelectTool={handleSelectTool} />
         <div className="editor-canvas-wrapper" id="editor-canvas-wrapper" ref={canvasWrapperRef}>
           <div className="editor-canvas" id="editor-canvas" ref={canvasRef} />
         </div>
@@ -204,6 +241,10 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
         onPropertyChange={handlePropertyChange}
         onDelete={handleDeleteElement}
         onDeselect={handleDeselect}
+        onGroup={handleGroup}
+        onUngroup={handleUngroup}
+        onBringToFront={handleBringToFront}
+        onSendToBack={handleSendToBack}
       />
     </>
   );

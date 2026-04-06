@@ -9,6 +9,10 @@ interface PropertyPanelProps {
   onPropertyChange: (key: string, value: unknown) => void;
   onDelete: () => void;
   onDeselect: () => void;
+  onGroup: () => void;
+  onUngroup: () => void;
+  onBringToFront: () => void;
+  onSendToBack: () => void;
 }
 
 const PRESET_COLORS = [
@@ -18,7 +22,7 @@ const PRESET_COLORS = [
   '#8B5CF6', '#EC4899', '#FFFFFF',
 ];
 
-export function PropertyPanel({ element, position, onPropertyChange, onDelete, onDeselect }: PropertyPanelProps) {
+export function PropertyPanel({ element, position, onPropertyChange, onDelete, onDeselect, onGroup, onUngroup, onBringToFront, onSendToBack }: PropertyPanelProps) {
   const [fill, setFill] = useState('#3B82F6');
   const [stroke, setStroke] = useState('');
   const [opacity, setOpacity] = useState(1);
@@ -74,6 +78,40 @@ export function PropertyPanel({ element, position, onPropertyChange, onDelete, o
           {isText ? '文字属性' : `${tag} 属性`}
         </span>
         <div className="property-panel-actions">
+          {/* 层级操作 */}
+          <button className="property-btn-icon" title="置顶" onClick={onBringToFront}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="17 11 12 6 7 11" />
+              <polyline points="17 18 12 13 7 18" />
+            </svg>
+          </button>
+          <button className="property-btn-icon" title="置底" onClick={onSendToBack}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="7 13 12 18 17 13" />
+              <polyline points="7 6 12 11 17 6" />
+            </svg>
+          </button>
+
+          {/* 编组操作 */}
+          <button className="property-btn-icon" title="编组" onClick={onGroup}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="8" height="8" rx="1" />
+              <rect x="14" y="2" width="8" height="8" rx="1" />
+              <rect x="2" y="14" width="8" height="8" rx="1" />
+              <rect x="14" y="14" width="8" height="8" rx="1" />
+            </svg>
+          </button>
+          <button className="property-btn-icon" title="解组" onClick={onUngroup}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="8" height="8" rx="1" />
+              <rect x="14" y="2" width="8" height="8" rx="1" />
+              <rect x="2" y="14" width="8" height="8" rx="1" />
+              <rect x="14" y="14" width="8" height="8" rx="1" />
+              <line x1="10" y1="10" x2="14" y2="14" />
+              <line x1="14" y1="10" x2="10" y2="14" />
+            </svg>
+          </button>
+
           <button className="property-btn-icon" title="删除" onClick={onDelete}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="3 6 5 6 21 6" />
