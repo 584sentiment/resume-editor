@@ -6,6 +6,7 @@ import { App, Rect, DragEvent } from 'leafer-ui';
 import { Editor } from '@leafer-in/editor';
 import '@leafer-in/text-editor';
 import '@leafer-in/viewport';
+import { Ruler } from 'leafer-x-ruler';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyInstance = any;
@@ -14,6 +15,7 @@ type AnyInstance = any;
 export class CanvasManager {
   private app: AnyInstance = null;
   private editor: AnyInstance = null;
+  private ruler: Ruler | null = null;
   private templateGroup: AnyInstance = null;
   private keyHandler: ((e: KeyboardEvent) => void) | null = null;
   private drawEvents: (() => void)[] | null = null;
@@ -57,6 +59,9 @@ export class CanvasManager {
     // App 会自动创建 editor 并添加到 sky 层
     this.editor = this.app.editor;
 
+    // 初始化标尺线插件
+    this.ruler = new Ruler(this.app);
+
     // 键盘事件：Delete 删除选中元素，Escape 取消选择
     this.keyHandler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -86,6 +91,8 @@ export class CanvasManager {
       if (this.app) {
         this.app.width = newRect.width;
         this.app.height = newRect.height;
+        // 触发 resize 事件以同步更新标尺
+        this.ruler?.forceRender();
       }
     });
     resizeObserver.observe(wrapper);
@@ -388,6 +395,17 @@ export class CanvasManager {
     }
   }
 
+  /** 切换标尺显示/隐藏 */
+  toggleRuler(enabled?: boolean): void {
+    if (!this.ruler) return;
+    this.ruler.enabled = enabled ?? !this.ruler.enabled;
+  }
+
+  /** 获取标尺启用状态 */
+  isRulerEnabled(): boolean {
+    return this.ruler?.enabled ?? false;
+  }
+
   /** 导出为 JSON */
   toJSON(): string | null {
     if (!this.app) return null;
@@ -402,6 +420,7 @@ export class CanvasManager {
     }
     this.exitDrawMode();
     this.templateGroup = null;
+    this.ruler = null;
     if (this.app) {
       this.app.destroy();
       this.app = null;
