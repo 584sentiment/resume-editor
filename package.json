@@ -19,6 +19,9 @@
     "@leafer-in/editor": "^2.0.8",
     "@leafer-in/text-editor": "^2.0.8",
     "@leafer-in/view": "^2.0.8",
+    "@leafer-in/viewport": "^2.0.8",
+    "@leafer-ui/app": "^2.0.8",
+    "@leafer-ui/draw": "2.0.8",
     "leafer-ui": "^2.0.8",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

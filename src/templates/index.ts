@@ -69,6 +69,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 700,
       fill: c,
       cornerRadius: 0,
+      editable: true,
     },
     // 头像区域
     {
@@ -78,6 +79,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       width: 100,
       height: 100,
       fill: 'rgba(255,255,255,0.2)',
+      editable: true,
     },
     // 姓名
     {
@@ -91,6 +93,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontWeight: 'bold',
       fontFamily: 'Poppins, sans-serif',
       textAlign: 'center',
+      editable: true,
     },
     // 职位
     {
@@ -103,6 +106,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 13,
       fontFamily: 'Inter, sans-serif',
       textAlign: 'center',
+      editable: true,
     },
     // 联系信息标题
     {
@@ -114,6 +118,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 14,
       fontWeight: '600',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     // 联系信息分隔线
     {
@@ -124,6 +129,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 3,
       fill: 'rgba(255,255,255,0.5)',
       cornerRadius: 1.5,
+      editable: true,
     },
     // 邮箱
     {
@@ -134,6 +140,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: 'rgba(255,255,255,0.7)',
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     // 电话
     {
@@ -144,6 +151,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: 'rgba(255,255,255,0.7)',
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     // 地址
     {
@@ -154,6 +162,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: 'rgba(255,255,255,0.7)',
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     // 技能标题
     {
@@ -165,6 +174,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 14,
       fontWeight: '600',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     // 技能分隔线
     {
@@ -175,6 +185,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 3,
       fill: 'rgba(255,255,255,0.5)',
       cornerRadius: 1.5,
+      editable: true,
     },
     // 技能条 - Figma
     {
@@ -185,6 +196,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: 'rgba(255,255,255,0.9)',
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -194,6 +206,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 5,
       fill: 'rgba(255,255,255,0.2)',
       cornerRadius: 2.5,
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -203,6 +216,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 5,
       fill: '#FFFFFF',
       cornerRadius: 2.5,
+      editable: true,
     },
     // 技能条 - Sketch
     {
@@ -213,6 +227,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: 'rgba(255,255,255,0.9)',
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -222,6 +237,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 5,
       fill: 'rgba(255,255,255,0.2)',
       cornerRadius: 2.5,
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -231,6 +247,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 5,
       fill: '#FFFFFF',
       cornerRadius: 2.5,
+      editable: true,
     },
     // 技能条 - 原型设计
     {
@@ -241,6 +258,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: 'rgba(255,255,255,0.9)',
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -250,6 +268,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 5,
       fill: 'rgba(255,255,255,0.2)',
       cornerRadius: 2.5,
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -259,6 +278,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 5,
       fill: '#FFFFFF',
       cornerRadius: 2.5,
+      editable: true,
     },
     // 右侧主内容区背景
     {
@@ -269,6 +289,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 700,
       fill: '#FFFFFF',
       cornerRadius: 0,
+      editable: true,
     },
     // 个人简介标题
     {
@@ -280,6 +301,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 16,
       fontWeight: '700',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     // 标题下划线
     {
@@ -290,6 +312,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 3,
       fill: c,
       cornerRadius: 1.5,
+      editable: true,
     },
     // 个人简介内容
     {
@@ -302,6 +325,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
       lineHeight: 20,
+      editable: true,
     },
     // 工作经历标题
     {
@@ -313,6 +337,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 16,
       fontWeight: '700',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -322,6 +347,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 3,
       fill: c,
       cornerRadius: 1.5,
+      editable: true,
     },
     // 工作经历 1
     {
@@ -331,6 +357,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       width: 10,
       height: 10,
       fill: c,
+      editable: true,
     },
     {
       tag: 'Text',
@@ -341,6 +368,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 13,
       fontWeight: '600',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -350,6 +378,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: '#94A3B8',
       fontSize: 10,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -359,6 +388,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: '#94A3B8',
       fontSize: 10,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -370,6 +400,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
       lineHeight: 20,
+      editable: true,
     },
     // 工作经历 2
     {
@@ -379,6 +410,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       width: 10,
       height: 10,
       fill: c,
+      editable: true,
     },
     {
       tag: 'Text',
@@ -389,6 +421,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 13,
       fontWeight: '600',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -398,6 +431,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: '#94A3B8',
       fontSize: 10,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -407,6 +441,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: '#94A3B8',
       fontSize: 10,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -418,6 +453,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 11,
       fontFamily: 'Inter, sans-serif',
       lineHeight: 20,
+      editable: true,
     },
     // 教育背景标题
     {
@@ -429,6 +465,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 16,
       fontWeight: '700',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Rect',
@@ -438,6 +475,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 3,
       fill: c,
       cornerRadius: 1.5,
+      editable: true,
     },
     {
       tag: 'Text',
@@ -448,6 +486,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontSize: 13,
       fontWeight: '600',
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -457,6 +496,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: '#94A3B8',
       fontSize: 10,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     {
       tag: 'Text',
@@ -466,6 +506,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       fill: '#94A3B8',
       fontSize: 10,
       fontFamily: 'Inter, sans-serif',
+      editable: true,
     },
     // 装饰元素
     {
@@ -476,6 +517,7 @@ export function createTemplateContent(template: ResumeTemplate) {
       height: 6,
       fill: c,
       cornerRadius: 0,
+      editable: true,
     },
   ] as any[];
 }

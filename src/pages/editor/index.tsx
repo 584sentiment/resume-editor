@@ -6,6 +6,7 @@ import { showToast } from '../../utils/ui.js';
 import { Topbar } from './topbar.js';
 import { Toolbar } from './toolbar.js';
 import { AIBubble } from './ai-bubble.js';
+import { PropertyPanel } from './property-panel.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyElement = any;
@@ -19,6 +20,7 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const [zoom, setZoom] = useState(1);
   const [selectedElement, setSelectedElement] = useState<AnyElement | null>(null);
   const [bubblePos, setBubblePos] = useState({ x: 0, y: 0 });
+  const [panelPos, setPanelPos] = useState({ x: 0, y: 0 });
 
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -29,66 +31,79 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     setCurrentIndex(templateIndex);
   }, [templateIndex]);
 
-  // 初始化画布
+  // 初始化画布 & 绑定事件
   useEffect(() => {
     if (!canvasRef.current || !canvasWrapperRef.current) return;
 
     const manager = new CanvasManager();
     manager.init(canvasRef.current, canvasWrapperRef.current);
-    manager.loadTemplate(currentIndex);
     managerRef.current = manager;
 
+    // 绑定事件
+    function bindEvents() {
+      const editor = manager.editorInstance;
+      const app = manager.instance;
+      if (!editor || !app) return;
+
+      const handleSelect = (e: { value: AnyElement }) => {
+        const element = e.value;
+        if (!element) {
+          setSelectedElement(null);
+          return;
+        }
+
+        setSelectedElement(element);
+        updateElementPosition(element);
+      };
+
+      const handleZoom = (e: { scale?: number }) => {
+        setZoom(e.scale || manager.getZoom());
+      };
+
+      editor.on('editor.select', handleSelect);
+      app.on('zoom', handleZoom);
+
+      return () => {
+        editor.off('editor.select', handleSelect);
+        app.off('zoom', handleZoom);
+      };
+    }
+
+    // 更新元素位置（用于气泡和面板定位）
+    function updateElementPosition(element: AnyElement) {
+      const isText = AIAssistant.isTextElement(element);
+      if (!canvasWrapperRef.current) return;
+
+      const rect = canvasWrapperRef.current.getBoundingClientRect();
+      const currentZoom = manager.getZoom();
+
+      const worldBox = element.worldBox || element.boxBounds || {};
+      const centerX = rect.left + ((worldBox.x || element.x || 0) + (worldBox.width || element.width || 100) / 2) * currentZoom;
+      const topY = rect.top + (worldBox.y || element.y || 0) * currentZoom;
+
+      if (isText) {
+        setBubblePos({
+          x: Math.max(10, Math.min(centerX - 100, window.innerWidth - 220)),
+          y: Math.max(10, topY - 55),
+        });
+      }
+
+      setPanelPos({
+        x: rect.left + ((worldBox.x || element.x || 0) + (worldBox.width || element.width || 100)) * currentZoom + 16,
+        y: topY,
+      });
+    }
+
+    manager.loadTemplate(currentIndex);
+    const cleanup = bindEvents();
+
     return () => {
+      cleanup?.();
       manager.destroy();
       managerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // 监听选择和缩放事件
-  useEffect(() => {
-    const manager = managerRef.current;
-    if (!manager || !manager.instance) return;
-    const leafer = manager.instance;
-
-    const handleSelect = (e: { value: AnyElement }) => {
-      const element = e.value;
-      if (element && AIAssistant.isTextElement(element)) {
-        setSelectedElement(element);
-        // 计算气泡位置
-        if (canvasWrapperRef.current) {
-          const rect = canvasWrapperRef.current.getBoundingClientRect();
-          const currentZoom = manager.getZoom();
-          const x = rect.left + (element.x || 0) * currentZoom + ((element.width || 100) * currentZoom) / 2;
-          const y = rect.top + (element.y || 0) * currentZoom - 50;
-          setBubblePos({
-            x: Math.max(10, Math.min(x - 100, window.innerWidth - 220)),
-            y: Math.max(10, y),
-          });
-        }
-      } else {
-        setSelectedElement(null);
-      }
-    };
-
-    const handleDeselect = () => {
-      setSelectedElement(null);
-    };
-
-    const handleZoom = (e: { scale?: number }) => {
-      setZoom(e.scale || manager.getZoom());
-    };
-
-    leafer.on('select', handleSelect);
-    leafer.on('deselect', handleDeselect);
-    leafer.on('zoom', handleZoom);
-
-    return () => {
-      leafer.off('select', handleSelect);
-      leafer.off('deselect', handleDeselect);
-      leafer.off('zoom', handleZoom);
-    };
-  }, [currentIndex]); // 切换模板后重新绑定事件
 
   const handleBack = useCallback(() => {
     managerRef.current?.destroy();
@@ -144,6 +159,20 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     showToast(message);
   }, [selectedElement]);
 
+  const handlePropertyChange = useCallback((key: string, value: unknown) => {
+    managerRef.current?.setElementProperty(key, value);
+  }, []);
+
+  const handleDeleteElement = useCallback(() => {
+    managerRef.current?.removeSelected();
+    setSelectedElement(null);
+  }, []);
+
+  const handleDeselect = useCallback(() => {
+    managerRef.current?.deselect();
+    setSelectedElement(null);
+  }, []);
+
   return (
     <>
       <Topbar
@@ -164,10 +193,17 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
         </div>
       </div>
       <AIBubble
-        visible={selectedElement !== null}
+        visible={selectedElement !== null && AIAssistant.isTextElement(selectedElement)}
         position={bubblePos}
         onRewrite={handleAIRewrite}
         onOptimize={handleAIOptimize}
+      />
+      <PropertyPanel
+        element={selectedElement}
+        position={panelPos}
+        onPropertyChange={handlePropertyChange}
+        onDelete={handleDeleteElement}
+        onDeselect={handleDeselect}
       />
     </>
   );
