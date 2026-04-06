@@ -681,14 +681,14 @@
 /* Floating Toolbar */
 .editor-toolbar {
   position: absolute;
-  left: 16px;
+  left: 26px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 50;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 8px;
+  padding: 4px;
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
@@ -1039,27 +1039,10 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-xl);
-  padding: 8px;
+  padding: 4px;
   z-index: 200;
-  min-width: 200px;
   animation: bubbleIn 0.2s ease;
-}
-
-.ai-bubble-header {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text);
-  border-bottom: 1px solid var(--border-light);
-  margin-bottom: 6px;
-}
-
-.ai-bubble-actions {
-  display: flex;
-  gap: 4px;
 }
 
 .ai-action-btn {

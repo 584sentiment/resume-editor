@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyElement = any;
 
 interface PropertyPanelProps {
   element: AnyElement | null;
-  position: { x: number; y: number };
   onPropertyChange: (key: string, value: unknown) => void;
   onDelete: () => void;
   onDeselect: () => void;
@@ -22,11 +21,16 @@ const PRESET_COLORS = [
   '#8B5CF6', '#EC4899', '#FFFFFF',
 ];
 
-export function PropertyPanel({ element, position, onPropertyChange, onDelete, onDeselect, onGroup, onUngroup, onBringToFront, onSendToBack }: PropertyPanelProps) {
+export function PropertyPanel({ element, onPropertyChange, onDelete, onDeselect, onGroup, onUngroup, onBringToFront, onSendToBack }: PropertyPanelProps) {
   const [fill, setFill] = useState('#3B82F6');
   const [stroke, setStroke] = useState('');
   const [opacity, setOpacity] = useState(1);
   const [cornerRadius, setCornerRadius] = useState(0);
+
+  // 拖拽状态
+  const [pos, setPos] = useState({ x: window.innerWidth - 270 - 20, y: 60 + 16 });
+  const dragging = useRef(false);
+  const offset = useRef({ x: 0, y: 0 });
 
   // 从选中元素读取当前属性
   useEffect(() => {
@@ -37,6 +41,34 @@ export function PropertyPanel({ element, position, onPropertyChange, onDelete, o
       setCornerRadius(element.cornerRadius ?? 0);
     }
   }, [element]);
+
+  // 拖拽事件
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    // 只允许通过 header 拖拽
+    if ((e.target as HTMLElement).closest('.property-panel-header')) {
+      dragging.current = true;
+      offset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+    }
+  }, [pos]);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      setPos({
+        x: Math.max(0, Math.min(e.clientX - offset.current.x, window.innerWidth - 260)),
+        y: Math.max(0, Math.min(e.clientY - offset.current.y, window.innerHeight - 100)),
+      });
+    };
+    const handleUp = () => {
+      dragging.current = false;
+    };
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleUp);
+    };
+  }, []);
 
   const handleFillChange = useCallback((color: string) => {
     setFill(color);
@@ -64,15 +96,14 @@ export function PropertyPanel({ element, position, onPropertyChange, onDelete, o
   const isText = tag === 'Text';
   const isShape = !isText;
 
-  // 计算面板位置（避免超出屏幕）
   const panelStyle: React.CSSProperties = {
     position: 'fixed',
-    left: Math.max(10, Math.min(position.x, window.innerWidth - 260)),
-    top: Math.max(10, Math.min(position.y, window.innerHeight - 400)),
+    left: pos.x,
+    top: pos.y,
   };
 
   return (
-    <div className="property-panel" style={panelStyle}>
+    <div className="property-panel" style={panelStyle} onMouseDown={handleMouseDown}>
       <div className="property-panel-header">
         <span className="property-panel-title">
           {isText ? '文字属性' : `${tag} 属性`}

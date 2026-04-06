@@ -20,7 +20,6 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const [zoom, setZoom] = useState(1);
   const [selectedElement, setSelectedElement] = useState<AnyElement | null>(null);
   const [bubblePos, setBubblePos] = useState({ x: 0, y: 0 });
-  const [panelPos, setPanelPos] = useState({ x: 0, y: 0 });
   const [activeTool, setActiveTool] = useState<string | null>(null);
 
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
@@ -49,6 +48,7 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
 
       const handleSelect = (e: { value: AnyElement }) => {
         const element = e.value;
+        console.log('Selected element:', element);
         if (!element) {
           setSelectedElement(null);
           return;
@@ -71,28 +71,31 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
       };
     }
 
-    // 更新元素位置（用于气泡和面板定位）
+    // 更新 AI 浮窗位置（元素上方居中）
     function updateElementPosition(element: AnyElement) {
-      const isText = AIAssistant.isTextElement(element);
       if (!canvasWrapperRef.current) return;
 
       const rect = canvasWrapperRef.current.getBoundingClientRect();
-      const currentZoom = manager.getZoom();
+      const tree = manager.treeLayer;
+      const currentZoom = tree?.scale || 1;
+      const treeX = tree?.x || 0;
+      const treeY = tree?.y || 0;
 
-      const worldBox = element.worldBox || element.boxBounds || {};
-      const centerX = rect.left + ((worldBox.x || element.x || 0) + (worldBox.width || element.width || 100) / 2) * currentZoom;
-      const topY = rect.top + (worldBox.y || element.y || 0) * currentZoom;
-
-      if (isText) {
-        setBubblePos({
-          x: Math.max(10, Math.min(centerX - 100, window.innerWidth - 220)),
-          y: Math.max(10, topY - 55),
-        });
+      // 沿父级链累加偏移，得到元素相对于 tree 层的绝对坐标
+      let offsetX = 0, offsetY = 0;
+      let node = element.parent;
+      while (node && node !== tree) {
+        offsetX += node.x || 0;
+        offsetY += node.y || 0;
+        node = node.parent;
       }
 
-      setPanelPos({
-        x: rect.left + ((worldBox.x || element.x || 0) + (worldBox.width || element.width || 100)) * currentZoom + 16,
-        y: topY,
+      const centerX = rect.left + treeX + (offsetX + element.x + element.width / 2) * currentZoom;
+      const topY = rect.top + treeY + (offsetY + element.y) * currentZoom;
+
+      setBubblePos({
+        x: Math.max(10, Math.min(centerX - 36, window.innerWidth - 80)),
+        y: Math.max(10, topY - 44),
       });
     }
 
@@ -243,7 +246,6 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
       />
       <PropertyPanel
         element={selectedElement}
-        position={panelPos}
         onPropertyChange={handlePropertyChange}
         onDelete={handleDeleteElement}
         onDeselect={handleDeselect}
