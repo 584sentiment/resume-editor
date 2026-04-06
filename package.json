@@ -1,0 +1,21 @@
+{
+  "name": "resume-editor",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1"
+  },
+  "dependencies": {
+    "@leafer-in/editor": "^2.0.8",
+    "@leafer-in/text-editor": "^2.0.8",
+    "@leafer-in/view": "^2.0.8",
+    "leafer-ui": "^2.0.8"
+  }
+}
