@@ -8,9 +8,7 @@
     "skipLibCheck": true,
 
     /* JSX */
-    "jsx": "react",
-    "jsxFactory": "createElement",
-    "jsxFragmentFactory": "Fragment",
+    "jsx": "react-jsx",
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -1,136 +1,174 @@
-import { createElement, Fragment } from '../../jsx/index.js';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { templates } from '../../templates/index.js';
 import { CanvasManager } from '../../canvas/manager.js';
 import { AIAssistant } from '../../ai/assistant.js';
 import { showToast } from '../../utils/ui.js';
-import { renderTopbar, updateZoomDisplay } from './topbar.js';
-import { renderToolbar } from './toolbar.js';
-import { renderAIBubble, showAIBubble, hideAIBubble, getSelectedElement } from './ai-bubble.js';
+import { Topbar } from './topbar.js';
+import { Toolbar } from './toolbar.js';
+import { AIBubble } from './ai-bubble.js';
 
-let canvasManager: CanvasManager | null = null;
-let currentTemplateIndex = 0;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyElement = any;
 
-export function renderEditorPage(container: HTMLElement, templateIndex?: number): void {
-  if (templateIndex !== undefined) {
-    currentTemplateIndex = templateIndex;
-  }
+interface EditorPageProps {
+  templateIndex?: number;
+}
 
-  const root = (
+export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
+  const [currentIndex, setCurrentIndex] = useState(templateIndex);
+  const [zoom, setZoom] = useState(1);
+  const [selectedElement, setSelectedElement] = useState<AnyElement | null>(null);
+  const [bubblePos, setBubblePos] = useState({ x: 0, y: 0 });
+
+  const canvasWrapperRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const managerRef = useRef<CanvasManager | null>(null);
+
+  // 同步外部传入的 templateIndex
+  useEffect(() => {
+    setCurrentIndex(templateIndex);
+  }, [templateIndex]);
+
+  // 初始化画布
+  useEffect(() => {
+    if (!canvasRef.current || !canvasWrapperRef.current) return;
+
+    const manager = new CanvasManager();
+    manager.init(canvasRef.current, canvasWrapperRef.current);
+    manager.loadTemplate(currentIndex);
+    managerRef.current = manager;
+
+    return () => {
+      manager.destroy();
+      managerRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 监听选择和缩放事件
+  useEffect(() => {
+    const manager = managerRef.current;
+    if (!manager || !manager.instance) return;
+    const leafer = manager.instance;
+
+    const handleSelect = (e: { value: AnyElement }) => {
+      const element = e.value;
+      if (element && AIAssistant.isTextElement(element)) {
+        setSelectedElement(element);
+        // 计算气泡位置
+        if (canvasWrapperRef.current) {
+          const rect = canvasWrapperRef.current.getBoundingClientRect();
+          const currentZoom = manager.getZoom();
+          const x = rect.left + (element.x || 0) * currentZoom + ((element.width || 100) * currentZoom) / 2;
+          const y = rect.top + (element.y || 0) * currentZoom - 50;
+          setBubblePos({
+            x: Math.max(10, Math.min(x - 100, window.innerWidth - 220)),
+            y: Math.max(10, y),
+          });
+        }
+      } else {
+        setSelectedElement(null);
+      }
+    };
+
+    const handleDeselect = () => {
+      setSelectedElement(null);
+    };
+
+    const handleZoom = (e: { scale?: number }) => {
+      setZoom(e.scale || manager.getZoom());
+    };
+
+    leafer.on('select', handleSelect);
+    leafer.on('deselect', handleDeselect);
+    leafer.on('zoom', handleZoom);
+
+    return () => {
+      leafer.off('select', handleSelect);
+      leafer.off('deselect', handleDeselect);
+      leafer.off('zoom', handleZoom);
+    };
+  }, [currentIndex]); // 切换模板后重新绑定事件
+
+  const handleBack = useCallback(() => {
+    managerRef.current?.destroy();
+    managerRef.current = null;
+    window.location.hash = '#';
+  }, []);
+
+  const handleTemplateSwitch = useCallback(async (index: number) => {
+    setCurrentIndex(index);
+    setSelectedElement(null);
+    managerRef.current?.switchTemplate(index);
+  }, []);
+
+  const handleZoomIn = useCallback(() => managerRef.current?.zoomIn(), []);
+  const handleZoomOut = useCallback(() => managerRef.current?.zoomOut(), []);
+  const handleResetView = useCallback(() => {
+    managerRef.current?.resetView();
+    setZoom(1);
+  }, []);
+
+  const handleAddShape = useCallback((shapeId: string) => {
+    managerRef.current?.addShape(shapeId);
+  }, []);
+
+  const handleExport = useCallback(() => {
+    const json = managerRef.current?.toJSON();
+    if (!json) {
+      showToast('导出失败，请重试');
+      return;
+    }
+
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'resume-design.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('设计文件已导出');
+  }, []);
+
+  const handleAIRewrite = useCallback(() => {
+    if (!selectedElement) return;
+    const assistant = new AIAssistant();
+    const message = assistant.execute(selectedElement, 'rewrite');
+    showToast(message);
+  }, [selectedElement]);
+
+  const handleAIOptimize = useCallback(() => {
+    if (!selectedElement) return;
+    const assistant = new AIAssistant();
+    const message = assistant.execute(selectedElement, 'optimize');
+    showToast(message);
+  }, [selectedElement]);
+
+  return (
     <>
-      {renderTopbar(templates, currentTemplateIndex)}
+      <Topbar
+        templates={templates}
+        currentIndex={currentIndex}
+        zoom={zoom}
+        onBack={handleBack}
+        onTemplateSwitch={handleTemplateSwitch}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onResetView={handleResetView}
+        onExport={handleExport}
+      />
       <div className="editor-layout">
-        {renderToolbar()}
-        <div className="editor-canvas-wrapper" id="editor-canvas-wrapper">
-          <div className="editor-canvas" id="editor-canvas" />
+        <Toolbar onAddShape={handleAddShape} />
+        <div className="editor-canvas-wrapper" id="editor-canvas-wrapper" ref={canvasWrapperRef}>
+          <div className="editor-canvas" id="editor-canvas" ref={canvasRef} />
         </div>
       </div>
-      {renderAIBubble()}
+      <AIBubble
+        visible={selectedElement !== null}
+        position={bubblePos}
+        onRewrite={handleAIRewrite}
+        onOptimize={handleAIOptimize}
+      />
     </>
   );
-
-  container.innerHTML = '';
-  container.appendChild(root);
-
-  bindEvents(container);
-  initCanvas(container);
-}
-
-/** 初始化画布并加载模板 */
-async function initCanvas(container: HTMLElement): Promise<void> {
-  canvasManager = new CanvasManager();
-  await canvasManager.init(container);
-  canvasManager.loadTemplate(currentTemplateIndex);
-
-  // 选择事件 -> AI 气泡
-  canvasManager.onSelect((element) => {
-    if (element && AIAssistant.isTextElement(element)) {
-      showAIBubble(container, element);
-    } else {
-      hideAIBubble(container);
-    }
-  });
-
-  // 缩放事件 -> 更新显示
-  canvasManager.onZoom((zoom) => {
-    updateZoomDisplay(container, zoom);
-  });
-}
-
-/** 绑定所有 UI 事件 */
-function bindEvents(container: HTMLElement): void {
-  // 返回首页
-  container.querySelector('#editor-back-btn')?.addEventListener('click', () => {
-    canvasManager?.destroy();
-    canvasManager = null;
-    window.location.hash = '#';
-  });
-
-  // 模板切换
-  container.querySelectorAll('.template-dot').forEach(dot => {
-    dot.addEventListener('click', async (e) => {
-      const index = parseInt((e.currentTarget as HTMLElement).dataset.index || '0');
-      currentTemplateIndex = index;
-      container.querySelectorAll('.template-dot').forEach((d, i) => {
-        d.classList.toggle('active', i === index);
-      });
-      await canvasManager?.switchTemplate(index);
-    });
-  });
-
-  // 缩放控制
-  container.querySelector('#zoom-in-btn')?.addEventListener('click', () => canvasManager?.zoomIn());
-  container.querySelector('#zoom-out-btn')?.addEventListener('click', () => canvasManager?.zoomOut());
-  container.querySelector('#zoom-fit-btn')?.addEventListener('click', () => {
-    canvasManager?.resetView();
-    updateZoomDisplay(container, 1);
-  });
-
-  // 添加图形
-  container.querySelectorAll('.toolbar-shape-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const shapeId = (e.currentTarget as HTMLElement).dataset.shapeId;
-      if (shapeId && canvasManager) {
-        canvasManager.addShape(shapeId);
-      }
-    });
-  });
-
-  // AI 操作
-  container.querySelector('#ai-rewrite-btn')?.addEventListener('click', () => {
-    handleAIAction(container, 'rewrite');
-  });
-  container.querySelector('#ai-optimize-btn')?.addEventListener('click', () => {
-    handleAIAction(container, 'optimize');
-  });
-
-  // 导出
-  container.querySelector('#export-btn')?.addEventListener('click', () => handleExport(container));
-}
-
-/** 处理 AI 操作 */
-function handleAIAction(container: HTMLElement, action: 'rewrite' | 'optimize'): void {
-  const element = getSelectedElement(container);
-  if (!element) return;
-
-  const assistant = new AIAssistant();
-  const message = assistant.execute(element, action);
-  showToast(message);
-}
-
-/** 处理导出 */
-function handleExport(container: HTMLElement): void {
-  const json = canvasManager?.toJSON();
-  if (!json) {
-    showToast('导出失败，请重试');
-    return;
-  }
-
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'resume-design.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('设计文件已导出');
 }

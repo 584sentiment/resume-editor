@@ -2,6 +2,8 @@ import type { ZoomEvent } from '../types/index.js';
 import { CANVAS } from '../constants/index.js';
 import { templates, createTemplateContent } from '../templates/index.js';
 import { allShapes } from '../shapes/index.js';
+import { Leafer } from 'leafer-ui';
+import { Editor } from '@leafer-in/editor';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyInstance = any;
@@ -19,15 +21,8 @@ export class CanvasManager {
     return this.editor;
   }
 
-  /** 初始化画布 */
-  async init(container: HTMLElement): Promise<void> {
-    const canvasEl = container.querySelector('#editor-canvas') as HTMLElement;
-    const wrapper = container.querySelector('#editor-canvas-wrapper') as HTMLElement;
-    if (!canvasEl || !wrapper) return;
-
-    const { Leafer } = await import('leafer-ui');
-    const { Editor } = await import('@leafer-in/editor');
-
+  /** 初始化画布，接受 canvas 容器和 wrapper 元素 */
+  init(canvasEl: HTMLElement, wrapper: HTMLElement): void {
     const rect = wrapper.getBoundingClientRect();
 
     this.leafer = new Leafer({
@@ -48,10 +43,6 @@ export class CanvasManager {
 
     // 点阵背景
     this.addDotGrid(rect.width, rect.height);
-
-    // 保存引用供外部访问
-    (canvasEl as any)._leafer = this.leafer;
-    (canvasEl as any)._editor = this.editor;
 
     // 窗口大小监听
     const resizeObserver = new ResizeObserver(() => {
@@ -82,12 +73,11 @@ export class CanvasManager {
   }
 
   /** 切换模板 */
-  async switchTemplate(templateIndex: number): Promise<void> {
+  switchTemplate(templateIndex: number): void {
     if (!this.leafer) return;
 
     this.leafer.removeAll();
 
-    const { Editor } = await import('@leafer-in/editor');
     this.editor = new Editor({ skewable: false, rotatePoint: { x: 0.5, y: 0.5 } });
     this.leafer.add(this.editor);
 
@@ -99,7 +89,7 @@ export class CanvasManager {
   }
 
   /** 添加图形到画布中心 */
-  async addShape(shapeId: string): Promise<void> {
+  addShape(shapeId: string): void {
     if (!this.leafer) return;
 
     if (shapeId === 'text') {
