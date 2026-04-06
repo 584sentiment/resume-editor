@@ -6,6 +6,7 @@ import { App, Rect, DragEvent } from 'leafer-ui';
 import { Editor } from '@leafer-in/editor';
 import '@leafer-in/text-editor';
 import '@leafer-in/viewport';
+import '@leafer-in/view';
 import { Ruler } from 'leafer-x-ruler';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -110,14 +111,13 @@ export class CanvasManager {
 
     const template = templates[templateIndex];
     const content = createTemplateContent(template);
-    this.templateGroup = {
+    this.templateGroup = tree.add({
       tag: 'Group',
       x: (width - CANVAS.RESUME_WIDTH) / 2,
       y: (height - CANVAS.RESUME_HEIGHT) / 2,
       children: content,
       editable: true,
-    };
-    tree.add(this.templateGroup);
+    });
   }
 
   /** 切换模板 - 仅清除 tree 层内容，保留 sky 层 Editor 和 ground 层点阵 */
@@ -301,33 +301,29 @@ export class CanvasManager {
 
   /** 缩放到指定比例 */
   setZoom(value: number): void {
-    if (this.app) {
-      (this.app as any).zoom = value;
-    }
+    this.treeLayer?.zoom(value);
   }
 
   /** 获取当前缩放比例 */
   getZoom(): number {
-    return (this.app as any)?.zoom || 1;
+    return this.treeLayer?.scale || 1;
   }
 
   /** 放大 */
   zoomIn(): void {
-    this.app?.zoomIn();
+    const current = this.getZoom();
+    this.treeLayer?.zoom(Math.min(current + 0.1, 5));
   }
 
   /** 缩小 */
   zoomOut(): void {
-    this.app?.zoomOut();
+    const current = this.getZoom();
+    this.treeLayer?.zoom(Math.max(current - 0.1, 0.1));
   }
 
   /** 重置视图 */
   resetView(): void {
-    this.setZoom(1);
-    if (this.app) {
-      this.app.x = 0;
-      this.app.y = 0;
-    }
+    this.treeLayer?.zoom(1);
   }
 
   /** 监听选择事件 */

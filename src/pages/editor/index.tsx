@@ -153,8 +153,14 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     managerRef.current?.switchTemplate(index);
   }, []);
 
-  const handleZoomIn = useCallback(() => managerRef.current?.zoomIn(), []);
-  const handleZoomOut = useCallback(() => managerRef.current?.zoomOut(), []);
+  const handleZoomIn = useCallback(() => {
+    managerRef.current?.zoomIn();
+    setZoom(managerRef.current?.getZoom() ?? 1);
+  }, []);
+  const handleZoomOut = useCallback(() => {
+    managerRef.current?.zoomOut();
+    setZoom(managerRef.current?.getZoom() ?? 1);
+  }, []);
   const handleResetView = useCallback(() => {
     managerRef.current?.resetView();
     setZoom(1);
