@@ -60,16 +60,19 @@ export function createTemplateContent(template: ResumeTemplate) {
 
   return [
 
-    // 左侧边栏背景
+    // 左侧边栏背景（锁定：不可选中/拖动，解锁后可编辑）
     {
       tag: 'Rect',
+      id: 'bg-left',
       x: 0,
       y: 0,
       width: 240,
       height: 700,
       fill: c,
       cornerRadius: 0,
-      editable: true,
+      editable: false,
+      hittable: false,
+      draggable: false,
     },
     // 头像区域
     {
@@ -280,16 +283,19 @@ export function createTemplateContent(template: ResumeTemplate) {
       cornerRadius: 2.5,
       editable: true,
     },
-    // 右侧主内容区背景
+    // 右侧主内容区背景（锁定：不可选中/拖动，解锁后可编辑）
     {
       tag: 'Rect',
+      id: 'bg-right',
       x: 240,
       y: 0,
       width: 360,
       height: 700,
       fill: '#FFFFFF',
       cornerRadius: 0,
-      editable: true,
+      editable: false,
+      hittable: false,
+      draggable: false,
     },
     // 个人简介标题
     {
@@ -508,16 +514,19 @@ export function createTemplateContent(template: ResumeTemplate) {
       fontFamily: 'Inter, sans-serif',
       editable: true,
     },
-    // 装饰元素
+    // 装饰元素（锁定：不可选中/拖动，解锁后可编辑）
     {
       tag: 'Rect',
+      id: 'bg-deco',
       x: 240,
       y: 0,
       width: 360,
       height: 6,
       fill: c,
       cornerRadius: 0,
-      editable: true,
+      editable: false,
+      hittable: false,
+      draggable: false,
     },
   ] as any[];
 }

@@ -23,6 +23,7 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  const [bgLocked, setBgLocked] = useState(true);
 
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -50,7 +51,6 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
 
       const handleSelect = (e: { value: AnyElement }) => {
         const element = e.value;
-        console.log('Selected element:', element);
         if (!element) {
           setSelectedElement(null);
           return;
@@ -268,6 +268,14 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const handleBringToFront = useCallback(() => managerRef.current?.bringToFront(), []);
   const handleSendToBack = useCallback(() => managerRef.current?.sendToBack(), []);
 
+  const handleToggleBgLock = useCallback(() => {
+    const mgr = managerRef.current;
+    if (!mgr) return;
+    const locked = mgr.toggleBackgroundsLock();
+    setBgLocked(locked);
+    showToast(locked ? '背景已锁定' : '背景已解锁，可选中调整');
+  }, []);
+
   return (
     <>
       <Topbar
@@ -276,10 +284,12 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
         zoom={zoom}
         canUndo={canUndo}
         canRedo={canRedo}
+        bgLocked={bgLocked}
         onBack={handleBack}
         onTemplateSwitch={handleTemplateSwitch}
         onUndo={handleUndo}
         onRedo={handleRedo}
+        onToggleBgLock={handleToggleBgLock}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onResetView={handleResetView}

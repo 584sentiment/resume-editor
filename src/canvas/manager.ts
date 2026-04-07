@@ -2,7 +2,7 @@ import type { ZoomEvent } from '../types/index.js';
 import { CANVAS } from '../constants/index.js';
 import { templates, createTemplateContent } from '../templates/index.js';
 import { allShapes } from '../shapes/index.js';
-import { App, Rect, DragEvent } from 'leafer-ui';
+import { App, Rect, DragEvent, Group } from 'leafer-ui';
 import { Editor } from '@leafer-in/editor';
 import '@leafer-in/text-editor';
 import '@leafer-in/viewport';
@@ -40,6 +40,9 @@ export class CanvasManager {
   private currentDrawShapeId: string | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private keyUpHandler: ((e: KeyboardEvent) => void) | null = null;
+  private bgLocked = true;
+
+  private static readonly BG_IDS = ['bg-left', 'bg-right', 'bg-deco'];
 
   /** 获取 App 实例（用于事件监听等） */
   get instance() {
@@ -150,14 +153,18 @@ export class CanvasManager {
 
     const template = templates[templateIndex];
     const content = createTemplateContent(template);
-    this.templateGroup = tree.add({
-      tag: 'Group',
+
+    // 使用 Group 类显式创建，以便获取正确的引用
+    const group = new Group({
       x: (width - CANVAS.RESUME_WIDTH) / 2,
       y: (height - CANVAS.RESUME_HEIGHT) / 2,
       children: content,
-      editable: true,
+      editable: false, // Group 本身不可编辑，只让子元素可编辑
     });
+    tree.add(group);
+    this.templateGroup = group;
 
+    this.bgLocked = true;
     this.snapshot();
   }
 
@@ -456,6 +463,95 @@ export class CanvasManager {
     return this.ruler?.enabled ?? false;
   }
 
+  /** 切换背景锁定状态（锁定时背景不可交互，解锁后可选中调整） */
+  toggleBackgroundsLock(): boolean {
+    this.bgLocked = !this.bgLocked;
+    const group = this.templateGroup;
+    if (!group) return this.bgLocked;
+
+    const interactive = !this.bgLocked;
+
+    CanvasManager.BG_IDS.forEach(id => {
+      const children = group.children || [];
+      let el: AnyInstance | null = null;
+      for (const child of children) {
+        if (child.id === id) {
+          el = child;
+          break;
+        }
+      }
+      if (el) {
+        el.editable = interactive;
+        el.hittable = interactive;
+        el.draggable = interactive;
+      }
+    });
+    return this.bgLocked;
+  }
+
+  /** 重新应用背景锁定状态（用于撤销后恢复正确的锁定状态） */
+  reapplyBackgroundLock(): void {
+    const tree = this.treeLayer;
+    if (!tree) return;
+
+    const interactive = !this.bgLocked;
+
+    // 在整个 tree 中查找背景元素
+    CanvasManager.BG_IDS.forEach(id => {
+      let el: AnyInstance | null = null;
+
+      // 方法1：在 tree 的直接子元素中查找
+      const directChildren = tree.children || [];
+      for (const child of directChildren) {
+        if (child.id === id) {
+          el = child;
+          break;
+        }
+      }
+
+      // 方法2：如果 templateGroup 存在，在其子元素中查找
+      if (!el && this.templateGroup) {
+        const groupChildren = this.templateGroup.children || [];
+        for (const child of groupChildren) {
+          if (child.id === id) {
+            el = child;
+            break;
+          }
+        }
+      }
+
+      // 方法3：递归搜索所有子元素
+      if (!el) {
+        const findDeep = (parent: AnyInstance): AnyInstance | null => {
+          const children = parent.children || [];
+          for (const child of children) {
+            if (child.id === id) return child;
+            if (child.children?.length) {
+              const found = findDeep(child);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        el = findDeep(tree);
+      }
+
+      if (el) {
+        el.editable = interactive;
+        el.hittable = interactive;
+        el.draggable = interactive;
+      }
+    });
+
+    // 取消当前选择
+    this.editor?.cancel();
+  }
+
+  /** 获取背景锁定状态 */
+  isBackgroundsLocked(): boolean {
+    return this.bgLocked;
+  }
+
   /** 导出为 JSON */
   toJSON(): string | null {
     if (!this.app) return null;
@@ -477,13 +573,41 @@ export class CanvasManager {
   /** 撤销 */
   undo(): boolean {
     const tree = this.treeLayer;
-    return tree ? undoLeafer(tree) : false;
+    const result = tree ? undoLeafer(tree) : false;
+    if (result) {
+      // 撤销后重新建立 templateGroup 引用
+      this.rebuildTemplateGroupRef();
+      // 撤销后重新应用背景锁定状态（因为历史快照可能恢复了旧的 editable 状态）
+      this.reapplyBackgroundLock();
+    }
+    return result;
+  }
+
+  /** 重新建立 templateGroup 引用（撤销后 tree 结构可能改变） */
+  rebuildTemplateGroupRef(): void {
+    const tree = this.treeLayer;
+    if (!tree) return;
+
+    // 查找具有 children 数量为 42 的 Group 作为 templateGroup
+    for (const child of tree.children || []) {
+      if (child.tag === 'Group' && child.children?.length === 42) {
+        this.templateGroup = child;
+        return;
+      }
+    }
   }
 
   /** 重做 */
   redo(): boolean {
     const tree = this.treeLayer;
-    return tree ? redoLeafer(tree) : false;
+    const result = tree ? redoLeafer(tree) : false;
+    if (result) {
+      // 重做后重新建立 templateGroup 引用
+      this.rebuildTemplateGroupRef();
+      // 重做后重新应用背景锁定状态
+      this.reapplyBackgroundLock();
+    }
+    return result;
   }
 
   /** 是否可以撤销 */
