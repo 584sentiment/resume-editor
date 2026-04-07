@@ -660,6 +660,21 @@
   padding: 2px 4px;
 }
 
+.history-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+}
+
+.history-controls .btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .zoom-value {
   font-size: 12px;
   font-weight: 500;

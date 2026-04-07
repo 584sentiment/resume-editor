@@ -4,8 +4,12 @@ interface TopbarProps {
   templates: ResumeTemplate[];
   currentIndex: number;
   zoom: number;
+  canUndo: boolean;
+  canRedo: boolean;
   onBack: () => void;
   onTemplateSwitch: (index: number) => void;
+  onUndo: () => void;
+  onRedo: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetView: () => void;
@@ -16,8 +20,12 @@ export function Topbar({
   templates,
   currentIndex,
   zoom,
+  canUndo,
+  canRedo,
   onBack,
   onTemplateSwitch,
+  onUndo,
+  onRedo,
   onZoomIn,
   onZoomOut,
   onResetView,
@@ -53,6 +61,20 @@ export function Topbar({
         </div>
       </div>
       <div className="editor-topbar-right">
+        <div className="history-controls">
+          <button className="btn btn-ghost btn-icon btn-sm" id="undo-btn" title="撤销 (Ctrl+Z)" disabled={!canUndo} onClick={onUndo}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 7v6h6" />
+              <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.69 3L3 13" />
+            </svg>
+          </button>
+          <button className="btn btn-ghost btn-icon btn-sm" id="redo-btn" title="重做 (Ctrl+Shift+Z)" disabled={!canRedo} onClick={onRedo}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 7v6h-6" />
+              <path d="M3 17a9 9 0 019-9 9 9 0 016.69 3L21 13" />
+            </svg>
+          </button>
+        </div>
         <div className="zoom-controls">
           <button className="btn btn-ghost btn-icon btn-sm" id="zoom-out-btn" title="缩小" onClick={onZoomOut}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

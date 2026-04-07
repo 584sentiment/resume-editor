@@ -21,6 +21,8 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const [selectedElement, setSelectedElement] = useState<AnyElement | null>(null);
   const [bubblePos, setBubblePos] = useState({ x: 0, y: 0 });
   const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -65,9 +67,16 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
       editor.on('editor.select', handleSelect);
       app.on('zoom', handleZoom);
 
+      // 监听历史变化，同步 canUndo/canRedo 状态
+      const cleanupHistory = manager.onHistoryChange(() => {
+        setCanUndo(manager.canUndo());
+        setCanRedo(manager.canRedo());
+      });
+
       return () => {
         editor.off('editor.select', handleSelect);
         app.off('zoom', handleZoom);
+        cleanupHistory();
       };
     }
 
@@ -200,6 +209,46 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     showToast(message);
   }, [selectedElement]);
 
+  const handleUndo = useCallback(() => {
+    const mgr = managerRef.current;
+    if (!mgr) return;
+    mgr.undo();
+    mgr.deselect();
+    setSelectedElement(null);
+    setCanUndo(mgr.canUndo());
+    setCanRedo(mgr.canRedo());
+  }, []);
+
+  const handleRedo = useCallback(() => {
+    const mgr = managerRef.current;
+    if (!mgr) return;
+    mgr.redo();
+    mgr.deselect();
+    setSelectedElement(null);
+    setCanUndo(mgr.canUndo());
+    setCanRedo(mgr.canRedo());
+  }, []);
+
+  // 撤销/重做快捷键
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+        e.preventDefault();
+        handleRedo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleUndo, handleRedo]);
+
   const handlePropertyChange = useCallback((key: string, value: unknown) => {
     managerRef.current?.setElementProperty(key, value);
   }, []);
@@ -225,8 +274,12 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
         templates={templates}
         currentIndex={currentIndex}
         zoom={zoom}
+        canUndo={canUndo}
+        canRedo={canRedo}
         onBack={handleBack}
         onTemplateSwitch={handleTemplateSwitch}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onResetView={handleResetView}

@@ -8,6 +8,23 @@ import '@leafer-in/text-editor';
 import '@leafer-in/viewport';
 import '@leafer-in/view';
 import { Ruler } from 'leafer-x-ruler';
+import {
+  historyPlugin,
+  createSnapshot,
+  undoLeafer,
+  redoLeafer,
+  getHistoryManager,
+  clearHistory,
+} from 'leafer-x-history';
+
+// 设置插件全局配置：提供自定义 createElement 以支持反序列化重建元素
+// 插件默认依赖全局 LeaferUI 变量，模块化项目中不存在，需手动提供
+(historyPlugin as AnyInstance).run(null, {
+  serializerOptions: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    createElement: (tag: string, props: any) => ({ tag, ...props }),
+  },
+});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyInstance = any;
@@ -21,6 +38,8 @@ export class CanvasManager {
   private keyHandler: ((e: KeyboardEvent) => void) | null = null;
   private drawEvents: (() => void)[] | null = null;
   private currentDrawShapeId: string | null = null;
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private keyUpHandler: ((e: KeyboardEvent) => void) | null = null;
 
   /** 获取 App 实例（用于事件监听等） */
   get instance() {
@@ -63,6 +82,14 @@ export class CanvasManager {
     // 初始化标尺线插件
     this.ruler = new Ruler(this.app);
 
+    // 手动注册历史插件到 tree 层
+    (historyPlugin as AnyInstance).onLeafer(this.app.tree);
+
+    // 监听拖拽/缩放/旋转完成事件，保存快照
+    this.editor.on('drag.end', () => {
+      this.snapshot();
+    });
+
     // 键盘事件：Delete 删除选中元素，Escape 取消选择
     this.keyHandler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -75,6 +102,7 @@ export class CanvasManager {
           list.forEach((item: AnyInstance) => item.remove());
           this.editor.cancel();
           e.preventDefault();
+          this.snapshot();
         }
       }
       if (e.key === 'Escape' && this.editor) {
@@ -82,6 +110,17 @@ export class CanvasManager {
       }
     };
     document.addEventListener('keydown', this.keyHandler);
+
+    // 方向键释放后保存快照（Editor 内部处理方向键移动，但不会触发 drag.end）
+    this.keyUpHandler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+      if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+      if (this.editor?.list?.length > 0) {
+        this.snapshot();
+      }
+    };
+    document.addEventListener('keyup', this.keyUpHandler);
 
     // 点阵背景添加到 ground 层
     this.addDotGrid(rect.width, rect.height);
@@ -118,12 +157,17 @@ export class CanvasManager {
       children: content,
       editable: true,
     });
+
+    this.snapshot();
   }
 
   /** 切换模板 - 仅清除 tree 层内容，保留 sky 层 Editor 和 ground 层点阵 */
   switchTemplate(templateIndex: number): void {
     const tree = this.treeLayer;
     if (!tree || !this.app) return;
+
+    // 切换模板时清空历史记录
+    this.clearHistoryState();
 
     // 移除旧的模板组
     if (this.templateGroup) {
@@ -154,6 +198,7 @@ export class CanvasManager {
         fontFamily: 'Inter, sans-serif',
         editable: true,
       });
+      this.snapshot();
       return;
     }
 
@@ -164,6 +209,7 @@ export class CanvasManager {
       const element = shape.create(centerX, centerY);
       element.editable = true;
       tree.add(element);
+      this.snapshot();
     }
   }
 
@@ -276,6 +322,7 @@ export class CanvasManager {
         fontFamily: 'Inter, sans-serif',
         editable: true,
       });
+      this.snapshot();
       return;
     }
 
@@ -297,6 +344,7 @@ export class CanvasManager {
     }
     element.editable = true;
     tree.add(element);
+    this.snapshot();
   }
 
   /** 缩放到指定比例 */
@@ -352,6 +400,7 @@ export class CanvasManager {
     if (list && list.length > 0) {
       list.forEach((item: AnyInstance) => item.remove());
       this.editor.cancel();
+      this.snapshot();
     }
   }
 
@@ -363,24 +412,28 @@ export class CanvasManager {
   /** 编组选中元素 */
   groupSelected(): void {
     this.editor?.group();
+    this.snapshot();
   }
 
   /** 解组选中元素 */
   ungroupSelected(): void {
     this.editor?.ungroup();
+    this.snapshot();
   }
 
   /** 置顶选中元素 */
   bringToFront(): void {
     this.editor?.toTop();
+    this.snapshot();
   }
 
   /** 置底选中元素 */
   sendToBack(): void {
     this.editor?.toBottom();
+    this.snapshot();
   }
 
-  /** 设置选中元素的属性 */
+  /** 设置选中元素的属性（防抖快照） */
   setElementProperty(key: string, value: unknown): void {
     if (!this.editor) return;
     const list = this.editor.list;
@@ -388,6 +441,7 @@ export class CanvasManager {
       list.forEach((item: AnyInstance) => {
         (item as Record<string, unknown>)[key] = value;
       });
+      this.debouncedSnapshot();
     }
   }
 
@@ -408,11 +462,81 @@ export class CanvasManager {
     return JSON.stringify(this.app.toJSON(), null, 2);
   }
 
+  /** 创建历史快照 */
+  snapshot(): void {
+    const tree = this.treeLayer;
+    if (tree) createSnapshot(tree);
+  }
+
+  /** 防抖快照（300ms），用于属性面板拖拽滑块等连续操作 */
+  debouncedSnapshot(): void {
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => this.snapshot(), 300);
+  }
+
+  /** 撤销 */
+  undo(): boolean {
+    const tree = this.treeLayer;
+    return tree ? undoLeafer(tree) : false;
+  }
+
+  /** 重做 */
+  redo(): boolean {
+    const tree = this.treeLayer;
+    return tree ? redoLeafer(tree) : false;
+  }
+
+  /** 是否可以撤销 */
+  canUndo(): boolean {
+    const tree = this.treeLayer;
+    const mgr = tree ? getHistoryManager(tree) : undefined;
+    return mgr?.canUndo ?? false;
+  }
+
+  /** 是否可以重做 */
+  canRedo(): boolean {
+    const tree = this.treeLayer;
+    const mgr = tree ? getHistoryManager(tree) : undefined;
+    return mgr?.canRedo ?? false;
+  }
+
+  /** 清空历史记录 */
+  async clearHistoryState(): Promise<void> {
+    const tree = this.treeLayer;
+    if (tree) await clearHistory(tree);
+  }
+
+  /** 监听历史变化 */
+  onHistoryChange(callback: () => void): () => void {
+    const tree = this.treeLayer;
+    const mgr = tree ? getHistoryManager(tree) : undefined;
+    if (!mgr) return () => {};
+    const handler = () => callback();
+    mgr.on('push', handler);
+    mgr.on('undo', handler);
+    mgr.on('redo', handler);
+    mgr.on('clear', handler);
+    return () => {
+      mgr.off('push', handler);
+      mgr.off('undo', handler);
+      mgr.off('redo', handler);
+      mgr.off('clear', handler);
+    };
+  }
+
   /** 销毁画布 */
   destroy(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
     if (this.keyHandler) {
       document.removeEventListener('keydown', this.keyHandler);
       this.keyHandler = null;
+    }
+    if (this.keyUpHandler) {
+      document.removeEventListener('keyup', this.keyUpHandler);
+      this.keyUpHandler = null;
     }
     this.exitDrawMode();
     this.templateGroup = null;
