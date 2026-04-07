@@ -21,6 +21,22 @@ const PRESET_COLORS = [
   '#8B5CF6', '#EC4899', '#FFFFFF',
 ];
 
+/** 将 rgba/rgb 颜色转换为十六进制格式（用于 color input） */
+function toHexColor(color: string): string {
+  if (!color || color === 'none') return '#ffffff';
+  // 已经是十六进制
+  if (color.startsWith('#')) return color;
+  // rgba/rgb 格式转换
+  const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (match) {
+    const r = parseInt(match[1]).toString(16).padStart(2, '0');
+    const g = parseInt(match[2]).toString(16).padStart(2, '0');
+    const b = parseInt(match[3]).toString(16).padStart(2, '0');
+    return `#${r}${g}${b}`;
+  }
+  return '#ffffff';
+}
+
 export function PropertyPanel({ element, onPropertyChange, onDelete, onDeselect, onGroup, onUngroup, onBringToFront, onSendToBack }: PropertyPanelProps) {
   const [fill, setFill] = useState('#3B82F6');
   const [stroke, setStroke] = useState('');
@@ -167,7 +183,7 @@ export function PropertyPanel({ element, onPropertyChange, onDelete, onDeselect,
               <input
                 type="color"
                 className="property-color-input"
-                value={fill === 'none' ? '#ffffff' : fill}
+                value={toHexColor(fill)}
                 onChange={(e) => handleFillChange(e.target.value)}
               />
               <input
@@ -200,7 +216,7 @@ export function PropertyPanel({ element, onPropertyChange, onDelete, onDeselect,
               <input
                 type="color"
                 className="property-color-input"
-                value={fill}
+                value={toHexColor(fill)}
                 onChange={(e) => handleFillChange(e.target.value)}
               />
               <input
@@ -232,7 +248,7 @@ export function PropertyPanel({ element, onPropertyChange, onDelete, onDeselect,
             <input
               type="color"
               className="property-color-input"
-              value={stroke || '#000000'}
+              value={toHexColor(stroke) || '#000000'}
               onChange={(e) => handleStrokeChange(e.target.value)}
             />
             <input

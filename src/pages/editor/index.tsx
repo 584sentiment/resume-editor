@@ -51,8 +51,19 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
 
       const handleSelect = (e: { value: AnyElement }) => {
         const element = e.value;
-        if (!element) {
+        // 处理空值、空数组、编辑器内部对象等情况
+        if (!element || (Array.isArray(element) && element.length === 0)) {
           setSelectedElement(null);
+          return;
+        }
+        // 如果是数组（多选），取第一个元素
+        if (Array.isArray(element)) {
+          setSelectedElement(element[0]);
+          updateElementPosition(element[0]);
+          return;
+        }
+        // 忽略没有 tag 属性的内部对象（如框选时的临时对象）
+        if (!element.tag) {
           return;
         }
 
