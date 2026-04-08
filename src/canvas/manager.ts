@@ -7,6 +7,7 @@ import { Editor } from '@leafer-in/editor';
 import '@leafer-in/text-editor';
 import '@leafer-in/viewport';
 import '@leafer-in/view';
+import '@leafer-in/export';
 import { Ruler } from 'leafer-x-ruler';
 import {
   historyPlugin,
@@ -622,6 +623,92 @@ export class CanvasManager {
   toJSON(): string | null {
     if (!this.app) return null;
     return JSON.stringify(this.app.toJSON(), null, 2);
+  }
+
+  /** 导出为图片格式 (PNG/JPG) */
+  async exportImage(format: 'png' | 'jpg'): Promise<Blob | null> {
+    const tree = this.treeLayer;
+    if (!tree) return null;
+
+    try {
+      const result = await tree.export(format, {
+        quality: format === 'jpg' ? 0.92 : undefined,
+        pixelRatio: 2,
+      });
+
+      if (result.error) {
+        return null;
+      }
+
+      if (result.data instanceof Blob) {
+        return result.data;
+      }
+
+      const dataUrl = result.data as string;
+      return fetch(dataUrl).then((r) => r.blob());
+    } catch {
+      return null;
+    }
+  }
+
+  /** 导出为 PDF */
+  async exportPDF(): Promise<Blob | null> {
+    const tree = this.treeLayer;
+    if (!tree) return null;
+
+    try {
+      const result = await tree.export('png', {
+        pixelRatio: 2,
+      });
+
+      if (result.error) {
+        return null;
+      }
+
+      let imageDataUrl: string;
+      if (result.data instanceof Blob) {
+        imageDataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(result.data);
+        });
+      } else {
+        imageDataUrl = result.data;
+      }
+
+      const { jsPDF } = await import('jspdf');
+
+      const imgWidth = result.width;
+      const imgHeight = result.height;
+      const ratio = imgWidth / imgHeight;
+
+      let pdfWidth: number;
+      let pdfHeight: number;
+      let orientation: 'portrait' | 'landscape';
+
+      if (ratio > 1) {
+        orientation = 'landscape';
+        pdfHeight = 200;
+        pdfWidth = pdfHeight * ratio;
+      } else {
+        orientation = 'portrait';
+        pdfWidth = 200;
+        pdfHeight = pdfWidth / ratio;
+      }
+
+      const pdf = new jsPDF({
+        orientation,
+        unit: 'mm',
+        format: [pdfWidth, pdfHeight],
+      });
+
+      pdf.addImage(imageDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+      return pdf.output('blob');
+    } catch {
+      return null;
+    }
   }
 
   /** 创建历史快照 */
