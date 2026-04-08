@@ -29,6 +29,12 @@ importers:
       leafer-ui:
         specifier: ^2.0.8
         version: 2.0.8
+      leafer-x-clip-resize-inner-editor:
+        specifier: ^1.10.0
+        version: 1.10.0
+      leafer-x-history:
+        specifier: ^1.0.1
+        version: 1.0.1(@leafer-ui/interface@2.0.8)(leafer-ui@2.0.8)
       leafer-x-ruler:
         specifier: ^2.0.1
         version: 2.0.1(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)
@@ -402,6 +408,15 @@ packages:
 
   leafer-ui@2.0.8:
     resolution: {integrity: sha512-hbVRADFlHjhW18/eqJpZ/G+z1y//gfsc+h9ahJ4cerHkRp1hIfKNplU8IE7nzVz06WlK4hwIVPKMBjZspGybEg==}
+
+  leafer-x-clip-resize-inner-editor@1.10.0:
+    resolution: {integrity: sha512-YfSk9KEJFU/MpPSkZokU0T5wsFaRh6L1zsOEcmVgBMohqNwdxL4YoKBolcrvi5ST4Yp1divbiTAKHQRT+7Pl9w==}
+
+  leafer-x-history@1.0.1:
+    resolution: {integrity: sha512-XDkMcJ/1vM8ImNgwFu7DzkbZt0KxD+Zcv1TzXLumjEGBE34rGsilx3fjw1K6X38WxnT9ipYp/BkMzCDafsr0tA==}
+    peerDependencies:
+      '@leafer-ui/interface': '>=1.0.0'
+      leafer-ui: '>=1.0.0'
 
   leafer-x-ruler@2.0.1:
     resolution: {integrity: sha512-5l3bpcEz7XXtK3gtvjAGOuQzdhGald1nWLB9l1HLQ1W1UuyMamAYIWqk182OHinOafh4P3OGKfrgz9tAB26WpA==}
@@ -1012,6 +1027,13 @@ snapshots:
       '@leafer/core': 2.0.8
       '@leafer/interface': 2.0.8
       '@leafer/partner': 2.0.8
+
+  leafer-x-clip-resize-inner-editor@1.10.0: {}
+
+  leafer-x-history@1.0.1(@leafer-ui/interface@2.0.8)(leafer-ui@2.0.8):
+    dependencies:
+      '@leafer-ui/interface': 2.0.8
+      leafer-ui: 2.0.8
 
   leafer-x-ruler@2.0.1(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8):
     dependencies:

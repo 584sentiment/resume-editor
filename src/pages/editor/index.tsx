@@ -287,6 +287,11 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     showToast(locked ? '背景已锁定' : '背景已解锁，可选中调整');
   }, []);
 
+  const handleImageUpload = useCallback((url: string) => {
+    managerRef.current?.addImage(url);
+    showToast('图片已添加，双击可裁剪');
+  }, []);
+
   return (
     <>
       <Topbar
@@ -307,7 +312,7 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
         onExport={handleExport}
       />
       <div className="editor-layout">
-        <Toolbar activeTool={activeTool} onSelectTool={handleSelectTool} />
+        <Toolbar activeTool={activeTool} onSelectTool={handleSelectTool} onImageUpload={handleImageUpload} />
         <div className="editor-canvas-wrapper" id="editor-canvas-wrapper" ref={canvasWrapperRef}>
           <div className="editor-canvas" id="editor-canvas" ref={canvasRef} />
         </div>

@@ -2,7 +2,7 @@ import type { ZoomEvent } from '../types/index.js';
 import { CANVAS } from '../constants/index.js';
 import { templates, createTemplateContent } from '../templates/index.js';
 import { allShapes } from '../shapes/index.js';
-import { App, Rect, DragEvent, Group } from 'leafer-ui';
+import { App, Rect, DragEvent, Group, Image, Text, Rect as RectClass, Ellipse, Line, Path, Polygon } from 'leafer-ui';
 import { Editor } from '@leafer-in/editor';
 import '@leafer-in/text-editor';
 import '@leafer-in/viewport';
@@ -16,13 +16,45 @@ import {
   getHistoryManager,
   clearHistory,
 } from 'leafer-x-history';
+import * as ClipModule from 'leafer-x-clip-resize-inner-editor';
 
 // 设置插件全局配置：提供自定义 createElement 以支持反序列化重建元素
 // 插件默认依赖全局 LeaferUI 变量，模块化项目中不存在，需手动提供
 (historyPlugin as AnyInstance).run(null, {
   serializerOptions: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createElement: (tag: string, props: any) => ({ tag, ...props }),
+    createElement: (tag: string, props: any): any => {
+      // 支持 ClipImage 标签
+      if (tag === 'ClipImage') {
+        const ClipImageClass = (ClipModule as any).ClipImage;
+        if (ClipImageClass) {
+          return new ClipImageClass(props);
+        }
+        return null;
+      }
+      // 使用 Leafer 内置类创建元素
+      switch (tag) {
+        case 'Group':
+          return new Group(props);
+        case 'Image':
+          return new Image(props);
+        case 'Text':
+          return new Text(props);
+        case 'Rect':
+          return new RectClass(props);
+        case 'Ellipse':
+          return new Ellipse(props);
+        case 'Line':
+          return new Line(props);
+        case 'Path':
+          return new Path(props);
+        case 'Polygon':
+          return new Polygon(props);
+        default:
+          console.warn('[createElement] Unknown tag:', tag);
+          return null;
+      }
+    },
   },
 });
 
@@ -87,6 +119,16 @@ export class CanvasManager {
 
     // 手动注册历史插件到 tree 层
     (historyPlugin as AnyInstance).onLeafer(this.app.tree);
+
+    // 裁剪插件通过 @registerInnerEditor() 自动注册，只需导入模块即可
+    void (ClipModule as any).ClipResizeEditor;
+
+    // 将 ClipResizeEditor 注册为 ClipImage 的内部编辑器
+    const ClipImageClass = (ClipModule as any).ClipImage;
+    const ClipResizeEditorClass = (ClipModule as any).ClipResizeEditor;
+    if (ClipImageClass && ClipResizeEditorClass) {
+      ClipImageClass.setEditInner(ClipResizeEditorClass.name);
+    }
 
     // 监听拖拽/缩放/旋转完成事件，保存快照
     this.editor.on('drag.end', () => {
@@ -218,6 +260,30 @@ export class CanvasManager {
       tree.add(element);
       this.snapshot();
     }
+  }
+
+  /** 添加图片到 tree 层中心 */
+  addImage(url: string): void {
+    const tree = this.treeLayer;
+    if (!tree) return;
+
+    const centerX = (this.app?.width || 800) / 2;
+    const centerY = (this.app?.height || 600) / 2;
+
+    // 直接创建 ClipImage 实例
+    const ClipImageClass = (ClipModule as any).ClipImage;
+    if (ClipImageClass) {
+      const image = new ClipImageClass({
+        x: centerX - 100,
+        y: centerY - 100,
+        width: 200,
+        height: 200,
+        url,
+        editable: true,
+      });
+      tree.add(image);
+    }
+    this.snapshot();
   }
 
   /** 进入绘制模式：使用 Leafer 原生 DragEvent */

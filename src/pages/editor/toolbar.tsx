@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { geometryShapes, decorationShapes, resumeShapes } from '../../shapes/index.js';
 import type { ShapeItem } from '../../shapes/index.js';
 
 interface ToolbarProps {
   activeTool: string | null;
   onSelectTool: (shapeId: string | null) => void;
+  onImageUpload?: (url: string) => void;
 }
 
 interface CategoryDef {
@@ -37,11 +38,52 @@ const categories: CategoryDef[] = [
 
 const textToolIcon = 'M4 7V4h16v3M9 20h6M12 4v16';
 
-export function Toolbar({ activeTool, onSelectTool }: ToolbarProps) {
+export function Toolbar({ activeTool, onSelectTool, onImageUpload }: ToolbarProps) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const url = event.target?.result as string;
+      onImageUpload?.(url);
+    };
+    reader.readAsDataURL(file);
+
+    // 重置 input 以便可以再次选择同一文件
+    e.target.value = '';
+  };
 
   return (
     <div className="editor-toolbar">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
+      <button
+        className="toolbar-category-btn"
+        title="上传图片"
+        onClick={handleImageUploadClick}
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
       {categories.map(cat => (
         <div
           key={cat.id}
