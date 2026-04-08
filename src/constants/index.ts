@@ -1,9 +1,9 @@
 /** 画布配置 */
 export const CANVAS = {
-  /** 简历默认宽度 */
-  RESUME_WIDTH: 600,
-  /** 简历默认高度 */
-  RESUME_HEIGHT: 700,
+  /** 简历默认宽度 (A4 比例 1:1.414) */
+  RESUME_WIDTH: 650,
+  /** 简历默认高度 (A4 比例) */
+  RESUME_HEIGHT: 919,
   /** 点阵间距 */
   DOT_SPACING: 20,
   /** 点阵点大小 */

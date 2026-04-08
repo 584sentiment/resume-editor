@@ -1,4 +1,7 @@
+import { useState, useRef, useEffect } from 'react';
 import type { ResumeTemplate } from '../../types/index.js';
+
+export type ExportFormat = 'json' | 'png' | 'jpg' | 'pdf';
 
 interface TopbarProps {
   templates: ResumeTemplate[];
@@ -15,7 +18,7 @@ interface TopbarProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetView: () => void;
-  onExport: () => void;
+  onExport: (format: ExportFormat) => void;
 }
 
 export function Topbar({
@@ -35,6 +38,38 @@ export function Topbar({
   onResetView,
   onExport,
 }: TopbarProps) {
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  // 点击外部关闭导出菜单
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
+        setShowExportMenu(false);
+      }
+    };
+    if (showExportMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showExportMenu]);
+
+  const handleExportClick = () => {
+    setShowExportMenu(!showExportMenu);
+  };
+
+  const handleExportFormat = (format: ExportFormat) => {
+    setShowExportMenu(false);
+    onExport(format);
+  };
+
+  const exportOptions: { format: ExportFormat; label: string; icon: string }[] = [
+    { format: 'json', label: 'JSON (设计文件)', icon: 'M4 4h16v16H4z' },
+    { format: 'png', label: 'PNG (高清图片)', icon: 'M4 4h16v16H4zM4 8h16M8 4v16' },
+    { format: 'jpg', label: 'JPG (普通图片)', icon: 'M4 4h16v16H4z' },
+    { format: 'pdf', label: 'PDF (简历文档)', icon: 'M4 4h16v16H4zM14 4v8h4' },
+  ];
+
   return (
     <div className="editor-topbar">
       <div className="editor-topbar-left">
@@ -118,14 +153,35 @@ export function Topbar({
             </svg>
           </button>
         </div>
-        <button className="btn btn-primary btn-sm" id="export-btn" onClick={onExport}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          导出
-        </button>
+        <div className="export-dropdown" ref={exportMenuRef}>
+          <button className="btn btn-primary btn-sm" id="export-btn" onClick={handleExportClick}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            导出
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          {showExportMenu && (
+            <div className="export-menu">
+              {exportOptions.map(opt => (
+                <button
+                  key={opt.format}
+                  className="export-menu-item"
+                  onClick={() => handleExportFormat(opt.format)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d={opt.icon} />
+                  </svg>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

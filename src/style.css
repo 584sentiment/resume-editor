@@ -1172,3 +1172,46 @@
     height: 34px;
   }
 }
+
+/* ========== Export Dropdown ========== */
+.export-dropdown {
+  position: relative;
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  min-width: 180px;
+  z-index: 200;
+  animation: flyoutIn 0.15s ease;
+}
+
+.export-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.export-menu-item:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -17,11 +18,13 @@
   },
   "dependencies": {
     "@leafer-in/editor": "^2.0.8",
+    "@leafer-in/export": "^2.0.8",
     "@leafer-in/text-editor": "^2.0.8",
     "@leafer-in/view": "^2.0.8",
     "@leafer-in/viewport": "^2.0.8",
     "@leafer-ui/app": "^2.0.8",
     "@leafer-ui/draw": "2.0.8",
+    "jspdf": "^4.2.1",
     "leafer-ui": "^2.0.8",
     "leafer-x-clip-resize-inner-editor": "^1.10.0",
     "leafer-x-history": "^1.0.1",

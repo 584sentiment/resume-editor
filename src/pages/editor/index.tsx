@@ -189,21 +189,65 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     setZoom(1);
   }, []);
 
-  const handleExport = useCallback(() => {
-    const json = managerRef.current?.toJSON();
-    if (!json) {
-      showToast('导出失败，请重试');
+  const handleExport = useCallback(async (format: 'json' | 'png' | 'jpg' | 'pdf') => {
+    const manager = managerRef.current;
+    if (!manager) {
+      showToast('导出失败，画布未初始化');
       return;
     }
 
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'resume-design.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('设计文件已导出');
+    try {
+      let blob: Blob | null = null;
+      let filename = '';
+      let mimeType = '';
+
+      switch (format) {
+        case 'json': {
+          const json = manager.toJSON();
+          if (!json) throw new Error('JSON 导出失败');
+          blob = new Blob([json], { type: 'application/json' });
+          filename = 'resume-design.json';
+          mimeType = 'application/json';
+          break;
+        }
+        case 'png': {
+          blob = await manager.exportImage('png');
+          filename = 'resume-design.png';
+          mimeType = 'image/png';
+          break;
+        }
+        case 'jpg': {
+          blob = await manager.exportImage('jpg');
+          filename = 'resume-design.jpg';
+          mimeType = 'image/jpeg';
+          break;
+        }
+        case 'pdf': {
+          blob = await manager.exportPDF();
+          filename = 'resume-design.pdf';
+          mimeType = 'application/pdf';
+          break;
+        }
+      }
+
+      if (!blob) {
+        showToast('导出失败，请重试');
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      const formatNames = { json: '设计文件', png: 'PNG 图片', jpg: 'JPG 图片', pdf: 'PDF 文档' };
+      showToast(`${formatNames[format]}已导出`);
+    } catch (err) {
+      console.error('[EditorPage] export error:', err);
+      showToast('导出失败，请重试');
+    }
   }, []);
 
   const handleAIRewrite = useCallback(() => {

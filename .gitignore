@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 测试相关
+test-artifacts/
+test-results/
+playwright-report/
+playwright.config.ts
+tests/
+test-export*.cjs
+test-export*.ts
+test-pdf-export.spec.ts
+
+# Claude Code
+.agents/
+.claude/
+
+# 构建产物
+artifacts/
