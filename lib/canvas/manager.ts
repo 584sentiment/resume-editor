@@ -443,9 +443,45 @@ export class CanvasManager {
     this.treeLayer?.zoom(Math.max(current - 0.1, 0.1));
   }
 
-  /** 重置视图 */
+  /** 适应窗口 - 缩放并居中画布内容 */
   resetView(): void {
-    this.treeLayer?.zoom(1);
+    const tree = this.treeLayer;
+    const app = this.app;
+    if (!tree || !app) return;
+
+    // 可视区尺寸
+    const viewWidth = app.width;
+    const viewHeight = app.height;
+
+    // 模板内容尺寸（固定为 650x919）
+    const contentWidth = CANVAS.RESUME_WIDTH;
+    const contentHeight = CANVAS.RESUME_HEIGHT;
+
+    // 计算缩放比例，使内容完整显示在可视区内（不超过 100%）
+    const padding = 40;
+    const scaleX = (viewWidth - padding * 2) / contentWidth;
+    const scaleY = (viewHeight - padding * 2) / contentHeight;
+    const scale = Math.min(scaleX, scaleY, 1);
+
+    // 先设置位置再缩放
+    // 模板在 treeLayer 坐标系中的原点是 (contentOriginX, contentOriginY)
+    // 我们需要让模板中心对齐可视区中心
+    // 模板中心在 treeLayer 坐标系中是 (contentOriginX + contentWidth/2, contentOriginY + contentHeight/2)
+    // 缩放后模板中心位置是 (contentOriginX + contentWidth/2) * scale
+    // 要让这个中心对齐可视区中心 (viewWidth/2, viewHeight/2)
+    // 需要 treeLayer 的 x, y 满足: (contentOriginX + contentWidth/2) * scale + treeLayer.x = viewWidth/2
+    // 即: treeLayer.x = viewWidth/2 - (contentOriginX + contentWidth/2) * scale
+    const contentOriginX = (viewWidth - contentWidth) / 2;
+    const contentOriginY = (viewHeight - contentHeight) / 2;
+    const contentCenterX = contentOriginX + contentWidth / 2;
+    const contentCenterY = contentOriginY + contentHeight / 2;
+
+    const offsetX = viewWidth / 2 - contentCenterX * scale;
+    const offsetY = viewHeight / 2 - contentCenterY * scale;
+
+    tree.x = offsetX;
+    tree.y = offsetY;
+    tree.zoom(scale);
   }
 
   /** 监听选择事件 */

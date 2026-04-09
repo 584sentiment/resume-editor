@@ -108,13 +108,13 @@ export function Topbar({
       </div>
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">
-          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors" id="undo-btn" title="撤销 (Ctrl+Z)" disabled={!canUndo} onClick={onUndo}>
+          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" id="undo-btn" title="撤销 (Ctrl+Z)" disabled={!canUndo} onClick={onUndo}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 7v6h6" />
               <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.69 3L3 13" />
             </svg>
           </button>
-          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors" id="redo-btn" title="重做 (Ctrl+Shift+Z)" disabled={!canRedo} onClick={onRedo}>
+          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" id="redo-btn" title="重做 (Ctrl+Shift+Z)" disabled={!canRedo} onClick={onRedo}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 7v6h-6" />
               <path d="M3 17a9 9 0 019-9 9 9 0 016.69 3L21 13" />

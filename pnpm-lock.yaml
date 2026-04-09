@@ -10,19 +10,19 @@ importers:
     dependencies:
       '@leafer-in/editor':
         specifier: ^2.0.8
-        version: 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
+        version: 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
       '@leafer-in/export':
         specifier: ^2.0.8
         version: 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
       '@leafer-in/text-editor':
         specifier: ^2.0.8
-        version: 2.0.8(@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/interface@2.0.8)
+        version: 2.0.8(@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/interface@2.0.8)
       '@leafer-in/view':
         specifier: ^2.0.8
         version: 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
       '@leafer-in/viewport':
         specifier: ^2.0.8
-        version: 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/interface@2.0.8)
+        version: 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/interface@2.0.8)
       '@leafer-ui/app':
         specifier: ^2.0.8
         version: 2.0.8
@@ -38,12 +38,18 @@ importers:
       leafer-x-clip-resize-inner-editor:
         specifier: ^1.10.0
         version: 1.10.0
+      leafer-x-dotwuxian:
+        specifier: ^0.0.3
+        version: 0.0.3(@leafer-ui/interface@2.0.8)
+      leafer-x-easy-snap:
+        specifier: ^1.11.0
+        version: 1.11.0
       leafer-x-history:
         specifier: ^1.0.1
         version: 1.0.1(@leafer-ui/interface@2.0.8)(leafer-ui@2.0.8)
       leafer-x-ruler:
         specifier: ^2.0.1
-        version: 2.0.1(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)
+        version: 2.0.1(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)
       next:
         specifier: ^15.0.0
         version: 15.5.15(@babel/core@7.29.0)(@playwright/test@1.59.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -1655,6 +1661,15 @@ packages:
   leafer-x-clip-resize-inner-editor@1.10.0:
     resolution: {integrity: sha512-YfSk9KEJFU/MpPSkZokU0T5wsFaRh6L1zsOEcmVgBMohqNwdxL4YoKBolcrvi5ST4Yp1divbiTAKHQRT+7Pl9w==}
 
+  leafer-x-dotwuxian@0.0.3:
+    resolution: {integrity: sha512-82kOv1YcO+R7waLB8OJ0ZJWE277TAVmRzv7OgGed5SKtc3yhbTT/b7eHPcnpkKCZgjTK91CgNJysSLPeNEyQ7w==}
+    peerDependencies:
+      '@leafer-ui/core': ^1.12.2
+      '@leafer-ui/interface': ^1.12.2
+
+  leafer-x-easy-snap@1.11.0:
+    resolution: {integrity: sha512-gR/G+6iVbzCz8MLOf9WjGFF5IEkObDjKMbmBiiHSh4vyQoZsoaukV26ETJcfmtmqKf47Hx4ZOxiyZazSuXMZVw==}
+
   leafer-x-history@1.0.1:
     resolution: {integrity: sha512-XDkMcJ/1vM8ImNgwFu7DzkbZt0KxD+Zcv1TzXLumjEGBE34rGsilx3fjw1K6X38WxnT9ipYp/BkMzCDafsr0tA==}
     peerDependencies:
@@ -2534,11 +2549,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)':
+  '@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)':
     dependencies:
       '@leafer-in/interface': 2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8)
       '@leafer-in/resize': 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
-      '@leafer-ui/core': 2.0.8
       '@leafer-ui/draw': 2.0.8
       '@leafer-ui/interface': 2.0.8
 
@@ -2559,11 +2573,10 @@ snapshots:
       '@leafer-ui/draw': 2.0.8
       '@leafer-ui/interface': 2.0.8
 
-  '@leafer-in/text-editor@2.0.8(@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/interface@2.0.8)':
+  '@leafer-in/text-editor@2.0.8(@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/interface@2.0.8)':
     dependencies:
-      '@leafer-in/editor': 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
+      '@leafer-in/editor': 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
       '@leafer-in/interface': 2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8)
-      '@leafer-ui/core': 2.0.8
       '@leafer-ui/interface': 2.0.8
 
   '@leafer-in/view@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)':
@@ -2572,10 +2585,9 @@ snapshots:
       '@leafer-ui/draw': 2.0.8
       '@leafer-ui/interface': 2.0.8
 
-  '@leafer-in/viewport@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/interface@2.0.8)':
+  '@leafer-in/viewport@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/interface@2.0.8)':
     dependencies:
       '@leafer-in/interface': 2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8)
-      '@leafer-ui/core': 2.0.8
       '@leafer-ui/interface': 2.0.8
 
   '@leafer-ui/app@2.0.8':
@@ -4101,16 +4113,21 @@ snapshots:
 
   leafer-x-clip-resize-inner-editor@1.10.0: {}
 
+  leafer-x-dotwuxian@0.0.3(@leafer-ui/interface@2.0.8):
+    dependencies:
+      '@leafer-ui/interface': 2.0.8
+
+  leafer-x-easy-snap@1.11.0: {}
+
   leafer-x-history@1.0.1(@leafer-ui/interface@2.0.8)(leafer-ui@2.0.8):
     dependencies:
       '@leafer-ui/interface': 2.0.8
       leafer-ui: 2.0.8
 
-  leafer-x-ruler@2.0.1(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8):
+  leafer-x-ruler@2.0.1(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8):
     dependencies:
-      '@leafer-in/editor': 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
-      '@leafer-in/text-editor': 2.0.8(@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/core@2.0.8)(@leafer-ui/interface@2.0.8)
-      '@leafer-ui/core': 2.0.8
+      '@leafer-in/editor': 2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8)
+      '@leafer-in/text-editor': 2.0.8(@leafer-in/editor@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-in/resize@2.0.8(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-ui/draw@2.0.8)(@leafer-ui/interface@2.0.8))(@leafer-in/interface@2.0.8(@leafer-ui/interface@2.0.8)(@leafer/interface@2.0.8))(@leafer-ui/interface@2.0.8)
       '@leafer-ui/interface': 2.0.8
     transitivePeerDependencies:
       - '@leafer-in/interface'

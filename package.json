@@ -19,6 +19,8 @@
     "jspdf": "^4.2.1",
     "leafer-ui": "^2.0.8",
     "leafer-x-clip-resize-inner-editor": "^1.10.0",
+    "leafer-x-dotwuxian": "^0.0.3",
+    "leafer-x-easy-snap": "^1.11.0",
     "leafer-x-history": "^1.0.1",
     "leafer-x-ruler": "^2.0.1",
     "next": "^15.0.0",
