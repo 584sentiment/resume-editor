@@ -12,11 +12,13 @@ interface TopbarProps {
   canUndo: boolean;
   canRedo: boolean;
   bgLocked: boolean;
+  snapEnabled: boolean;
   onBack: () => void;
   onTemplateSwitch: (index: number) => void;
   onUndo: () => void;
   onRedo: () => void;
   onToggleBgLock: () => void;
+  onToggleSnap: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetView: () => void;
@@ -30,11 +32,13 @@ export function Topbar({
   canUndo,
   canRedo,
   bgLocked,
+  snapEnabled,
   onBack,
   onTemplateSwitch,
   onUndo,
   onRedo,
   onToggleBgLock,
+  onToggleSnap,
   onZoomIn,
   onZoomOut,
   onResetView,
@@ -139,6 +143,24 @@ export function Topbar({
                 <path d="M7 11V7a5 5 0 019.9-1" />
               </>
             )}
+          </svg>
+        </button>
+        <button
+          className={`p-2 hover:bg-slate-100 rounded-lg transition-colors ${snapEnabled ? 'text-primary' : 'text-slate-400'}`}
+          title={snapEnabled ? '吸附已开启（移动元素时显示对齐辅助线）' : '吸附已关闭'}
+          onClick={onToggleSnap}
+          style={{ color: snapEnabled ? '#2563EB' : undefined }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="1" />
+            <circle cx="12" cy="5" r="1" />
+            <circle cx="12" cy="19" r="1" />
+            <circle cx="5" cy="12" r="1" />
+            <circle cx="19" cy="12" r="1" />
+            <line x1="12" y1="6" x2="12" y2="11" />
+            <line x1="12" y1="13" x2="12" y2="18" />
+            <line x1="6" y1="12" x2="11" y2="12" />
+            <line x1="13" y1="12" x2="18" y2="12" />
           </svg>
         </button>
         <div className="flex items-center gap-1 bg-slate-100 rounded-lg px-1">

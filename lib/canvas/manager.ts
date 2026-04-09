@@ -9,6 +9,7 @@ import '@leafer-in/viewport';
 import '@leafer-in/view';
 import '@leafer-in/export';
 import { Ruler } from 'leafer-x-ruler';
+import { Snap } from 'leafer-x-easy-snap';
 import {
   historyPlugin,
   createSnapshot,
@@ -67,6 +68,8 @@ export class CanvasManager {
   private app: AnyInstance = null;
   private editor: AnyInstance = null;
   private ruler: Ruler | null = null;
+  private snap: Snap | null = null;
+  private snapEnabled = true;
   private templateGroup: AnyInstance = null;
   private keyHandler: ((e: KeyboardEvent) => void) | null = null;
   private drawEvents: (() => void)[] | null = null;
@@ -117,6 +120,10 @@ export class CanvasManager {
 
     // 初始化标尺线插件
     this.ruler = new Ruler(this.app);
+
+    // 初始化吸附插件
+    this.snap = new Snap(this.app);
+    this.snap.enable(true);
 
     // 手动注册历史插件到 tree 层
     (historyPlugin as AnyInstance).onLeafer(this.app.tree);
@@ -561,6 +568,18 @@ export class CanvasManager {
     this.ruler.enabled = enabled ?? !this.ruler.enabled;
   }
 
+  /** 切换吸附功能开启/关闭 */
+  toggleSnap(enabled?: boolean): void {
+    if (!this.snap) return;
+    this.snapEnabled = enabled ?? !this.snapEnabled;
+    this.snap.enable(this.snapEnabled);
+  }
+
+  /** 获取吸附功能启用状态 */
+  isSnapEnabled(): boolean {
+    return this.snapEnabled;
+  }
+
   /** 获取标尺启用状态 */
   isRulerEnabled(): boolean {
     return this.ruler?.enabled ?? false;
@@ -854,6 +873,7 @@ export class CanvasManager {
     this.exitDrawMode();
     this.templateGroup = null;
     this.ruler = null;
+    this.snap = null;
     if (this.app) {
       this.app.destroy();
       this.app = null;

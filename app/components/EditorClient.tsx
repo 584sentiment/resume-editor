@@ -28,6 +28,7 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [bgLocked, setBgLocked] = useState(true);
+  const [snapEnabled, setSnapEnabled] = useState(true);
 
   const canvasWrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -335,6 +336,15 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
     showToast(locked ? '背景已锁定' : '背景已解锁，可选中调整');
   }, []);
 
+  const handleToggleSnap = useCallback(() => {
+    const mgr = managerRef.current;
+    if (!mgr) return;
+    mgr.toggleSnap();
+    const enabled = mgr.isSnapEnabled();
+    setSnapEnabled(enabled);
+    showToast(enabled ? '吸附已开启' : '吸附已关闭');
+  }, []);
+
   const handleImageUpload = useCallback((url: string) => {
     managerRef.current?.addImage(url);
     showToast('图片已添加，双击可裁剪');
@@ -349,11 +359,13 @@ export function EditorPage({ templateIndex = 0 }: EditorPageProps) {
         canUndo={canUndo}
         canRedo={canRedo}
         bgLocked={bgLocked}
+        snapEnabled={snapEnabled}
         onBack={handleBack}
         onTemplateSwitch={handleTemplateSwitch}
         onUndo={handleUndo}
         onRedo={handleRedo}
         onToggleBgLock={handleToggleBgLock}
+        onToggleSnap={handleToggleSnap}
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onResetView={handleResetView}
