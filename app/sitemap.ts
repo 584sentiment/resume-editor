@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { templates } from '@/lib/templates/index';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://your-domain.com';
+  const baseUrl = 'https://124.220.83.152';
 
   const staticPages: MetadataRoute.Sitemap = [
     {

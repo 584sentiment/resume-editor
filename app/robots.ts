@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/editor', '/api/'],
       },
     ],
-    sitemap: 'https://your-domain.com/sitemap.xml',
+    sitemap: 'https://124.220.83.152/sitemap.xml',
   };
 }

@@ -6,7 +6,7 @@ const jsonLd = {
   '@type': 'WebApplication',
   name: 'ResumeCraft - 创意简历编辑器',
   description: 'AI 驱动的简历设计工具，基于 LeaferJS 的无限画布编辑器',
-  url: 'https://your-domain.com',
+  url: 'https://124.220.83.152',
   applicationCategory: 'DesignApplication',
   operatingSystem: 'Web Browser',
   offers: {
