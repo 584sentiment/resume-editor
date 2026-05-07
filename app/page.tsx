@@ -287,6 +287,23 @@ export default function HomePage() {
               <span className="text-lg font-bold">ResumeCraft</span>
             </div>
             <p className="text-slate-400 text-sm">基于 LeaferJS 构建的创意简历编辑器</p>
+            <p className="text-slate-400 text-sm">
+              <a
+                href="https://beian.miit.gov.cn/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                粤ICP备2026045335号
+              </a>
+            </p>
+            <p className="text-slate-400 text-sm">© 2026 Mr.Wang. All rights reserved.</p>
+            <a
+              href="mailto:584sentimental@gmail.com"
+              className="text-slate-400 text-sm hover:text-white transition-colors"
+            >
+              联系方式: 584sentimental@gmail.com
+            </a>
           </div>
         </div>
       </footer>

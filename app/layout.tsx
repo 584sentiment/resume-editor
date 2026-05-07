@@ -24,7 +24,7 @@ const jsonLd = {
 export const metadata: Metadata = {
   title: 'ResumeCraft - 创意简历编辑器 | 免费在线简历设计工具',
   description: '基于 LeaferJS 的无限画布编辑器，提供丰富的几何图形和简历装饰元素。拖拽组合，自由排版，让每一份简历都独一无二。',
-  keywords: '简历编辑器,创意简历,在线简历设计,简历模板,免费简历制作,简历设计工具',
+  keywords: '简历编辑器,创意简历,在线简历设计,简历模板,免费简历制作,简历设计工具,ICP备案,粤ICP备2026045335号',
   authors: [{ name: 'ResumeCraft' }],
   openGraph: {
     title: 'ResumeCraft - 创意简历编辑器',
